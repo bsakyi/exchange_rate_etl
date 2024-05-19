@@ -2,7 +2,9 @@ provider "aws" {
   region = "us-east-1"
 }
 
-resource "aws_s3_bucket" "emil_coinbase" {
-  bucket = "emil-coinbase-bucket"  
+resource "aws_s3_bucket" "saturday_bucket" {
+  bucket = "saturday-coinbase-bucket"  
   
 }
+
+

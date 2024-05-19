@@ -75,7 +75,8 @@ cur_pg = conn_pg.cursor()
 # establish connection local postgres
 local_pgcur, local_pgcon = postgresdb_connection( pg_host, pg_dbname, pg_user, pg_port, pg_password)
 
-
+# API URL
+api_url = config.url
 
 def main():
     print("REDSHIFT")
@@ -83,6 +84,7 @@ def main():
     print("LOCAL")
     print(local_pgcur, local_pgcon)
     print("Hello")
+    print(api_url)
 
 if __name__ == "__main__":
     main()

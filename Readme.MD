@@ -8,9 +8,9 @@ This repository contains an ETL (Extract, Transform, Load) pipeline designed to 
 
 This file contains the connection parameters for various databases and services used in the ETL pipeline, including Redshift, S3, and local PostgreSQL.
 
-### 2. `etl_process.py`
+### 2. `extract_etl.py`
 
-This Python script orchestrates the ETL process. It connects to both the Redshift and local PostgreSQL databases, retrieves data from the Coinbase API, processes it, and uploads it to the databases.
+This Python script orchestrates the ETL process. It connects to both the Redshift and local PostgreSQL databases, retrieves data from the openexchangerates API, processes it, and uploads it to the databases.
 
 ### 3. `connection.py`
 

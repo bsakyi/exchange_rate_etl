@@ -16,11 +16,16 @@ region_name = 'us-east-1'
 
 # local postgres conection params
 # pgadmin on ubuntu test@test.com pwd: hello
-pg_dbname = 'coinbase10'
+pg_dbname = 'exchange_rate'
 pg_host ='172.17.0.2'
 pg_port = 5432
 pg_user = 'postgres'
 pg_password = 'hello'
 
 
+# Open exchange
+APP_ID = 'a872d43c93724c798fe5b09d3699ea80'
 
+# url = 'https://openexchangerates.org/api/latest.json?app_id=a872d43c93724c798fe5b09d3699ea80'
+
+url = 'https://openexchangerates.org/api/historical/2004-05-19.json?app_id=a872d43c93724c798fe5b09d3699ea80'

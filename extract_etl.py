@@ -11,14 +11,6 @@ import connection
 connection = reload(connection) 
 
 
-# %%
-# create connection object postgres db 
-local_con =connection.local_pgcon
-local_cur = connection.local_pgcur
-
-print(local_con) 
-print("\n")
-print(local_cur) 
 
 
 # %% [markdown]
@@ -29,14 +21,13 @@ print(local_cur)
 s3 = connection.s3_bucket
 
 # create Redshift connection and cursor
-cur_redshift = connection.redshift_cur
-conn_redshift = connection.redshift_con
-# print(cur_redshift)
-print(cur_redshift)
+cur_redshift = connection.cur_redshift
+conn_redshift = connection.conn_redshift
+
 
 #create local postgres connection and cursor
-cur_pg = connection.local_pgcur
-conn_pg = connection.local_pgcon
+cur_pg = connection.cur_pg
+conn_pg = connection.conn_pg
 
 
 
@@ -49,7 +40,7 @@ response = requests.get(connection.api_url)
 # %%
 # Assign the API response to the variable api_data
 api_data = response.text
-api_data
+# api_data
 
 # %% [markdown]
 # MAKE TRANSFORMATIONS TO THE API DATA: DATE COLUMN CREATION, RATE_DATE VARIABLE TO APPEND TO CSV FILE NAME
@@ -89,7 +80,7 @@ else:
 
 # %%
 # File name to be used for saving csv, exchange_rate + date and time from the timestamp of the dataframe
-csv_file_path = f'exchange_rate_{rate_date}.csv' 
+csv_file_path = f'./datasets/exchange_rate_{rate_date}.csv' 
 print(csv_file_path)
 df.to_csv(csv_file_path, index=False)
 
@@ -103,20 +94,29 @@ print(file_name)
 
 df.to_csv(file_name, index=False, compression='gzip')
 
-compressed_csv = file_name
+# location for local storage
+compressed_csv_local = file_name
+
+# formatting the location to be stored as datasets/exchange_rate_date_time.csv.gz for s3 bucket
+compressed_csv_s3 = file_name[2:]
+
+print(compressed_csv_s3)
+
+
 
 
 # %% [markdown]
 # DATA UPLOAD TO AWS S3 BUCKET 
 
 # %%
-with open(compressed_csv, 'rb') as file:
+print("*****S3 DATA UPLOAD")
+with open(compressed_csv_local, 'rb') as file:
     # Upload the file object to S3 bucket
-    s3.upload_fileobj(file, 'emil-coinbase-bucket', compressed_csv)
+    s3.upload_fileobj(file, 'emil-coinbase-bucket', compressed_csv_s3)
 
 # %%
 # Check if the file has been successfully uploaded
-if s3.head_object(Bucket='emil-coinbase-bucket', Key=compressed_csv):
+if s3.head_object(Bucket='emil-coinbase-bucket', Key=compressed_csv_s3):
     print("CSV file uploaded to S3 bucket successfully")
 else:
     print("Upload not successful")
@@ -125,6 +125,7 @@ else:
 # CREATE LOCAL DATABASE TABLE, AND INSERT DATA INTO DATABASE
 
 # %%
+print(f"Creating table in Local Database on Server: {connection.pg_host}")
 table_name = 'exchange_rates'
 try:
     
@@ -137,6 +138,7 @@ try:
                     )'''
     connection.cur_pg.execute(rates_table)
     connection.conn_pg.commit()
+    print("Table Creation Successful")
 except conn_pg.Error as e:
     connection.conn_pg.rollback()
     print("Error occurred:", e)
@@ -146,6 +148,7 @@ except conn_pg.Error as e:
 
 # %%
 # INSERT DATA TO LOCAL DB
+print("Data Upload Local DB")
 try:
     # size of each batch
     batch_size = 200
@@ -165,6 +168,7 @@ try:
             connection.conn_pg.commit()
 
             print(insert_query)
+            print('Data Successfully Inserted into Local Postgres DB')
         except Exception as e:
             # Rollback the transaction
             connection.conn_pg.rollback()
@@ -180,7 +184,7 @@ except Exception as e:
 
 # %%
     # create table REDSHIFT
-
+print("Create Table Redshift")
 table_name = 'exchange_rates'
 try:
     
@@ -195,7 +199,7 @@ try:
   
  connection.cur_redshift.execute(rates_table)
  connection.conn_redshift.commit()
- print("Table created successfully.")
+ print(f"Redshift Table {table_name} created successfully.")
 
 except Exception as e:
  connection.conn_redshift.rollback()
@@ -203,25 +207,32 @@ except Exception as e:
 
 # %%
 # upload data to Redshift form s3 bucket
-   
+
 
 aws_access_key_id = connection.aws_access_key_id
 aws_secret_access_key = connection.aws_secret_access_key
 
-insert_from_s3 = f"""COPY {table_name}
-FROM 's3://emil-coinbase-bucket/{compressed_csv}'
-CREDENTIALS 'aws_access_key_id={aws_access_key_id};aws_secret_access_key={aws_secret_access_key}'
-IGNOREHEADER 1
-FORMAT AS csv
-gzip
-DELIMITER ','; """
 
+try:
+    insert_from_s3 = f"""COPY {table_name}
+    FROM 's3://emil-coinbase-bucket/{compressed_csv_s3}'
+    CREDENTIALS 'aws_access_key_id={aws_access_key_id};aws_secret_access_key={aws_secret_access_key}'
+    IGNOREHEADER 1
+    FORMAT AS csv
+    gzip
+    DELIMITER ','; """
+    
+    connection.cur_redshift.execute(insert_from_s3)
+    connection.conn_redshift.commit()
+    print(f"Copy to Redshift: {table_name} was successful")
 
-connection.cur_redshift.execute(insert_from_s3)
-connection.conn_redshift.commit()
-print(f"Copy to Redshift: {table_name} was successful")
+except Exception as e:
+    connection.conn_redshift.rollback()
+    print(f"An error occurred: {str(e)}")
 
-conn_redshift.close()
+finally:
+    # Close the Redshift connection
+    connection.conn_redshift.close()
 
 
 

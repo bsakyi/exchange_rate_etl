@@ -23,3 +23,28 @@ pg_password = 'hello' #postgres password
 
 
 
+# LATEST EXCHANGE RATE DATA
+
+url = 'https://openexchangerates.org/api/latest.json?app_id=a872d43c93724c798fe5b09d3699ea80'
+
+
+# HISTORICAL DATA
+
+# url = 'https://openexchangerates.org/api/historical/2004-05-19.json?app_id=a872d43c93724c798fe5b09d3699ea80'
+
+# url = 'https://openexchangerates.org/api/historical/2004-12-31.json?app_id=a872d43c93724c798fe5b09d3699ea80'
+
+# url = 'https://openexchangerates.org/api/historical/2005-05-19.json?app_id=a872d43c93724c798fe5b09d3699ea80'
+
+# url = 'https://openexchangerates.org/api/historical/2005-12-31.json?app_id=a872d43c93724c798fe5b09d3699ea80'
+
+# url = 'https://openexchangerates.org/api/historical/2006-05-19.json?app_id=a872d43c93724c798fe5b09d3699ea80'
+
+# url = 'https://openexchangerates.org/api/historical/2006-12-31.json?app_id=a872d43c93724c798fe5b09d3699ea80'
+
+# url = 'https://openexchangerates.org/api/historical/2007-05-19.json?app_id=a872d43c93724c798fe5b09d3699ea80'
+
+
+# url =''
+
+

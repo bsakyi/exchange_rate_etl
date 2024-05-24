@@ -36,10 +36,10 @@ To set up the ETL pipeline, follow these steps:
 4. To orchestrate the ETL process, run [make] in your terminal
 
 ###Contributors
-Benjamin Sakyi - bsakyi@trestleacademyghana.org -Project Lead
-Nana Kwame Opoku - nopoku@trestleacademyghana.org
-Kenneth Boateng - boateng@trestleacademyghana.org
-Frank Agbenyo Fugah - fugah@trestleacademyghana.org
-Carl Bebli - cbebli@trestleacademyghana.org
-Richard Owusu - rich@trestleacademyghana.org
+Benjamin Sakyi - bsakyi@trestleacademyghana.org -Project Lead <br>
+Nana Kwame Opoku - nopoku@trestleacademyghana.org <br>
+Kenneth Boateng - boateng@trestleacademyghana.org <br>
+Frank Agbenyo Fugah - fugah@trestleacademyghana.org <br>
+Carl Bebli - cbebli@trestleacademyghana.org <br>
+Richard Owusu - rich@trestleacademyghana.org <br>
 Delbert Pecker - pecker@trestleacademyghana.org
